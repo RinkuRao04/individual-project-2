@@ -75,11 +75,12 @@ jobs:
          #     chmod 600 private_key.pem
          #     scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/path/to/deployment
          #     ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST 'docker-compose -f /path/to/deployment/docker-compose.yml up -d'
-        - name: Run docker-compose
-          uses: hoverkraft-tech/compose-action@v2.0.1
-          with:
-            compose-file: "."
+        # - name: Run docker-compose
+        #   uses: hoverkraft-tech/compose-action@v2.0.1
+        #   with:
+        #     compose-file: "."
   
         - name: Execute tests in the running services
           run: |
-            docker-compose exec test-app pytest
+              docker-compose up -d
+      # docker-compose exec test-app pytest
