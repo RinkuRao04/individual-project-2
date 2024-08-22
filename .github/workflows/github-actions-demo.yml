@@ -34,7 +34,7 @@ jobs:
           uses: rtCamp/action-slack-notify@v2
           with:
             status: starting
-            webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
+            webhook_url: $SLACK_WEBHOOK_URL
             message: 'Starting Build and Deploy...'
           if: always()
         # - name: Slack Notification
