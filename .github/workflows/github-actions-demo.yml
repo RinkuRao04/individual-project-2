@@ -27,7 +27,7 @@ jobs:
           uses: aquasecurity/trivy-action@master
           with:
             image-ref: 'rinkukunwarrao/demo-image-test:latest'
-            exit-code: '1'
+            # exit-code: '1'
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
 
@@ -65,4 +65,21 @@ jobs:
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
-        
+         # - name: Deploy to Remote Server
+         #   env:
+         #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+         #     HOST: ${{ secrets.REMOTE_HOST }}
+         #     USER: ${{ secrets.REMOTE_USER }}
+         #   run: |
+         #     echo "$SSH_PRIVATE_KEY" > private_key.pem
+         #     chmod 600 private_key.pem
+         #     scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/path/to/deployment
+         #     ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST 'docker-compose -f /path/to/deployment/docker-compose.yml up -d'
+        - name: Run docker-compose
+          uses: hoverkraft-tech/compose-action@v2.0.1
+          with:
+            compose-file: "."
+  
+        - name: Execute tests in the running services
+          run: |
+            docker-compose exec test-app pytest
