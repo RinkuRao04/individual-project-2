@@ -27,7 +27,7 @@ jobs:
             image-ref: 'rinkukunwarrao/demo-image-test:latest'
             exit-code: '0'
             format: 'sarif'
-            output: 'trivy-results.sarif'
+            output: 'test.sarif'
 
         # - name: Upload Trivy scan results to GitHub Security tab
         #   uses: github/codeql-action/upload-sarif@v2
