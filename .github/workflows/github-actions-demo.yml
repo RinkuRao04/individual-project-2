@@ -34,7 +34,7 @@ jobs:
           uses: act10ns/slack@v1
           with: 
             status: starting
-            channel: '	Anjali Soni'
+            channel: 'Anjali Soni'
             message: Starting Build and Deploy...
           if: always()     
 
