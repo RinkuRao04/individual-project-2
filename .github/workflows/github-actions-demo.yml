@@ -27,7 +27,7 @@ jobs:
           uses: aquasecurity/trivy-action@master
           with:
             image-ref: 'rinkukunwarrao/demo-image-test:latest'
-            exit-code: '0'
+            # exit-code: '0'
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
 
@@ -65,11 +65,4 @@ jobs:
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
-        - name: Slack Notification - Completed
-          uses: act10ns/slack@v1
-          with:
-            status: success
-            token: ${{ secrets.SLACK_TOKEN }}
-            channel: ${{ secrets.SLACK_CHANNEL }}
-            message: 'Build and Deploy completed successfully!'
-          if: always()
+        
