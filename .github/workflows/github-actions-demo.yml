@@ -51,7 +51,7 @@ jobs:
         #     message: 'Starting Build and Deploy...'
         #   if: always()   
         - name: Send Slack Notification
-          # if: failure()
+          if: failure()
           uses: rtCamp/action-slack-notify@v2
           env:
             SLACK_CHANNEL: 'Anjali Soni'
