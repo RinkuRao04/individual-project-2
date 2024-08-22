@@ -14,7 +14,7 @@ jobs:
           env:
             username: ${{secrets.DOCKERHUB_USERNAME}}
             password: ${{secrets.DOCKERHUB_PASSWORD}}
-            SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+            
             
           run: |
             docker login -u $username -p $password 
@@ -30,11 +30,12 @@ jobs:
             exit-code: '0'
 
 
-        - name: Slack Notification
-          uses: rtCamp/action-slack-notify@v2
+        - name: Slack Notification - Starting
+          uses: act10ns/slack@v1
           with:
             status: starting
-            webhook_url: $SLACK_WEBHOOK_URL
+            token: ${{ secrets.SLACK_TOKEN }}
+            channel: ${{ secrets.SLACK_CHANNEL }}
             message: 'Starting Build and Deploy...'
           if: always()
         # - name: Slack Notification
@@ -52,3 +53,12 @@ jobs:
         - name: push the docker image
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
+
+        - name: Slack Notification - Completed
+          uses: act10ns/slack@v1
+          with:
+            status: success
+            token: ${{ secrets.SLACK_TOKEN }}
+            channel: ${{ secrets.SLACK_CHANNEL }}
+            message: 'Build and Deploy completed successfully!'
+          if: always()
