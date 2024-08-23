@@ -49,9 +49,9 @@ jobs:
           if: failure()
           uses: slackapi/slack-github-action@v1.26.0
           env: 
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
             SLACK_CHANNEL: '#testing'
             SLACK_COLOR: '#3339ff'
-            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
             SLACK_MESSAGE: 'Starting Build and Deploy...'
         #   if: always()   
         # - name: Post to a Slack channel
