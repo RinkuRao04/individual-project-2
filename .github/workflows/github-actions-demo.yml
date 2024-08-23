@@ -23,12 +23,12 @@ jobs:
           id: build-docker-image
           run: |
             ls -la 
-#             docker build . -t rinkukunwarrao/demo-image-test:latest
+            docker build . -t rinkukunwarrao/demo-image-test:latest
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@master
           with:
             image-ref: 'rinkukunwarrao/demo-image-test:latest'
-            # exit-code: '1'
+            exit-code: '1'
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
 
@@ -59,7 +59,7 @@ jobs:
           env:
             SLACK_CHANNEL: 'Vaibhavraj Nath Chauhan'
             SLACK_COLOR: '#ff0000'
-            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted again.'
+            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
             SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_V }}
           
         - name: push the docker image
