@@ -50,12 +50,18 @@ jobs:
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
+        # - name: pull the docker image
+        #   id: pull-docker-image
+        #   run: docker pull rinkukunwarrao/demo-image-test:latest
+
         - name: pull the docker image
-          id: pull-docker-image
-          run: docker pull rinkukunwarrao/demo-image-test:latest
-
-
-        - name: run
-          run: docker run -d rinkukunwarrao/demo-image-test:latest
-
+        - uses: docker/build-push-action@v2
+          with:
+           tags: demo-image-test:latest
+           push: false
+          
+        - uses: addnab/docker-run-action@v3
+          with:
+            image: demo-image-test:latest
+            run: echo "hello world"
          
