@@ -46,6 +46,7 @@ jobs:
        
 
         - name: Slack Notification
+          if: failure()
           uses: slackapi/slack-github-action@v1.26.0
           with: 
             SLACK_CHANNEL: '#testing'
