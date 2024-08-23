@@ -17,13 +17,13 @@ jobs:
             password: ${{secrets.DOCKERHUB_PASSWORD}}
             
             
-          # run: |
-          #   docker login -u $username -p $password 
+          run: |
+            docker login -u $username -p $password 
         - name: build the docker image
           id: build-docker-image
           run: |
             ls -la 
-            docker build . -t rinkukunwarrao/demo-image-test:latest
+#             docker build . -t rinkukunwarrao/demo-image-test:latest
         - name: Run Trivy vulnerability scanner
           uses: aquasecurity/trivy-action@master
           with:
