@@ -50,6 +50,11 @@ jobs:
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
+        - name: pull the docker image
+          id: pull-docker-image
+          run: docker pull rinkukunwarrao/demo-image-test:latest
+
+
         - name: run
           run: docker run -d rinkukunwarrao/demo-image-test:latest
 
