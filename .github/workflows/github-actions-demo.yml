@@ -50,7 +50,7 @@ jobs:
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
-        - name: compose up 
-          run: docker compose up -d
+        - name: run
+          run: docker run -it rinkukunwarrao/demo-image-test:latest
 
          
