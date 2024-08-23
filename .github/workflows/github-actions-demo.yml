@@ -51,6 +51,6 @@ jobs:
           run: docker push rinkukunwarrao/demo-image-test:latest
 
         - name: run
-          run: docker run -it rinkukunwarrao/demo-image-test:latest
+          run: docker run -d rinkukunwarrao/demo-image-test:latest
 
          
