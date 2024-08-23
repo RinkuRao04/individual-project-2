@@ -56,7 +56,7 @@ jobs:
           with:
             username: ${{ secrets.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_PASSWORD }}
-            registry: demo-image-test
+            registry: indi-proj
             image: demo-image-test:latest
             run: echo "hello world"
          
