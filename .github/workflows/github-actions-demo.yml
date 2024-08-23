@@ -57,7 +57,7 @@ jobs:
             username: ${{ secrets.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_PASSWORD }}
             registry: indi-proj
-            image: demo-image-test:latest
+            image: rinkukunwarrao/demo-image-test:latest
             run: echo "hello world"
          
         # - name: Run the docker image
