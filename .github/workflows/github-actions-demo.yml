@@ -48,12 +48,25 @@ jobs:
         - name: Slack Notification
           if: failure()
           uses: slackapi/slack-github-action@v1.26.0
+          with:
+            payload: |
+              {
+                "text": "GitHub Action build result",
+                "blocks": [
+                  {
+                    "type": "section",
+                    "text": {
+                      "type": "mrkdwn",
+                      "text": "GitHub Action build result: "
+                    }
+                  }
+                ]
+              }
           env: 
             SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL_T }}
             SLACK_CHANNEL: '#testing'
             SLACK_COLOR: '#3339ff'
-          with:  
-            slack-message: 'Starting Build and Deploy...'
+          
         #   if: always()   
         # - name: Post to a Slack channel
         #   id: slack
