@@ -45,22 +45,23 @@ jobs:
 
        
 
-        # - name: Slack Notification
-        #   uses: act10ns/slack@v1
-        #   with: 
-        #     status: starting
-        #     webhook_url: ${{ secrets.SLACK_WEBHOOK_URL }}
-        #     channel: '#Anjali Soni'
-        #     message: 'Starting Build and Deploy...'
-        #   if: always()   
-        - name: Send Slack Notification
-          if: failure()
-          uses: rtCamp/action-slack-notify@v2
-          env:
+        - name: Slack Notification
+          uses: act10ns/slack@v1
+          with: 
             SLACK_CHANNEL: '#testing'
-            SLACK_COLOR: '#ff0000'
-            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
+            SLACK_COLOR: '#3339ff'
             SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
+            SLACK_MESSAGE: 'Starting Build and Deploy...'
+        #   if: always()   
+          
+        # - name: Send Slack Notification
+        #   if: failure()
+        #   uses: rtCamp/action-slack-notify@v2
+        #   env:
+        #     SLACK_CHANNEL: '#testing'
+        #     SLACK_COLOR: '#ff0000'
+        #     SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
+        #     SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
           
         - name: push the docker image
           id: push-docker-image
