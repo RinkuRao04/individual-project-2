@@ -44,17 +44,13 @@ jobs:
             SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
           
        
-        - name: Send Slack Notification
-          if: failure()
-          uses: rtCamp/action-slack-notify@v2
-          env:
-            SLACK_CHANNEL: '#testing'
-            SLACK_COLOR: '#ff0000'
-            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted, again .'
-            SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
+    
           
         - name: push the docker image
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
+
+        - name: compose up 
+          run: docker compose up -d
 
          
