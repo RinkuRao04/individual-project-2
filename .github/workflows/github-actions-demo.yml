@@ -46,15 +46,22 @@ jobs:
        
 
         - name: Slack Notification
-          uses: act10ns/slack@v1
+          uses: slackapi/slack-github-action@v1.26.0
           with: 
             SLACK_CHANNEL: '#testing'
             SLACK_COLOR: '#3339ff'
-            SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
+            SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
             SLACK_MESSAGE: 'Starting Build and Deploy...'
         #   if: always()   
-          
-        # - name: Send Slack Notification
+        # - name: Post to a Slack channel
+        #   id: slack
+        #   uses: slackapi/slack-github-action@v1.26.0
+        #   with:
+        #     channel-id: '#testing'
+        #     slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
+        #   env:
+        #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+                # - name: Send Slack Notification
         #   if: failure()
         #   uses: rtCamp/action-slack-notify@v2
         #   env:
