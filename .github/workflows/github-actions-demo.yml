@@ -59,7 +59,8 @@ jobs:
           with:
            tags: demo-image-test:latest
            push: false
-          
+         
+        - name: Run the docker image
         - uses: addnab/docker-run-action@v3
           with:
             image: demo-image-test:latest
