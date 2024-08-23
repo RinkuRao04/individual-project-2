@@ -32,86 +32,29 @@ jobs:
             vuln-type: 'os,library'
             severity: 'CRITICAL,HIGH'
 
-
-        # - name: Slack Notification - Starting
-        #   uses: act10ns/slack@v1
-        #   with:
-        #     status: starting
-        #     token: ${{ secrets.SLACK_TOKEN }}
-        #     channel: ${{ secrets.SLACK_CHANNEL }}
-        #     message: 'Starting Build and Deploy...'
-        #   if: always()
-         
-
-       
+            
 
         - name: Slack Notification
           if: failure()
-          uses: rtCamp/action-slack-notify@v2
-          with:
-            payload: |
-              {
-                "text": "GitHub Action build result",
-                "blocks": [
-                  {
-                    "type": "section",
-                    "text": {
-                      "type": "mrkdwn",
-                      "text": "GitHub Action build result: "
-                    }
-                  }
-                ]
-              }
+          uses: rtCamp/action-slack-notify@v
           env: 
             SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
             SLACK_CHANNEL: '#testing'
             SLACK_COLOR: '#3339ff'
+            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
           
-        #   if: always()   
-        # - name: Post to a Slack channel
-        #   id: slack
-        #   uses: slackapi/slack-github-action@v1.26.0
-        #   with:
-        #     channel-id: '#testing'
-        #     slack-message: "GitHub build result: ${{ job.status }}\n${{ github.event.pull_request.html_url || github.event.head_commit.url }}"
-        #   env:
-        #     SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
-                # - name: Send Slack Notification
-        #   if: failure()
-        #   uses: rtCamp/action-slack-notify@v2
-        #   env:
-        #     SLACK_CHANNEL: '#testing'
-        #     SLACK_COLOR: '#ff0000'
-        #     SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
-        #     SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
+       
+        - name: Send Slack Notification
+          if: failure()
+          uses: rtCamp/action-slack-notify@v2
+          env:
+            SLACK_CHANNEL: '#testing'
+            SLACK_COLOR: '#ff0000'
+            SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
+            SLACK_WEBHOOK: ${{ secrets.SLACK_TOKEN_T }}
           
         - name: push the docker image
           id: push-docker-image
           run: docker push rinkukunwarrao/demo-image-test:latest
 
-         # - name: Deploy to Remote Server
-         #   env:
-         #     SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-         #     HOST: ${{ secrets.REMOTE_HOST }}
-         #     USER: ${{ secrets.REMOTE_USER }}
-         #   run: |
-         #     echo "$SSH_PRIVATE_KEY" > private_key.pem
-         #     chmod 600 private_key.pem
-         #     scp -i private_key.pem -o StrictHostKeyChecking=no docker-compose.yml $USER@$HOST:/path/to/deployment
-         #     ssh -i private_key.pem -o StrictHostKeyChecking=no $USER@$HOST 'docker-compose -f /path/to/deployment/docker-compose.yml up -d'
-        # - name: Run docker-compose
-        #   uses: hoverkraft-tech/compose-action@v2.0.1
-        #   with:
-        #     compose-file: "."
-        # - name: Set up Docker Compose
-        #   run: |
-        #     sudo curl -L "https://github.com/docker/compose/releases/download/$(curl -s https://api.github.com/repos/docker/compose/releases/latest | grep tag_name | cut -d '"' -f 4)/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-        #     sudo chmod +x /usr/local/bin/docker-compose
-
-        # - name: Verify Docker Compose installation
-        #   run: docker compose --version
-          
-        # - name: Execute tests in the running services
-        #   run: |
-        #       docker compose up -d
-      # docker-compose exec test-app pytest
+         
