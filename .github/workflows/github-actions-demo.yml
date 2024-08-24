@@ -26,18 +26,18 @@ jobs:
             id: build-docker-image-frontend
             run: |
               cd frontend
-              docker build . -t rinkukunwarrao/Project-frontend:latest
+              docker build . -t rinkukunwarrao/project_frontend:latest
               
           - name: build the docker image
             id: build-docker-image-backend
             run: |
               cd backend
-              docker build . -t rinkukunwarrao/Project-backend:latest
+              docker build . -t rinkukunwarrao/project_backend:latest
               
           - name: Run Trivy vulnerability scanner
             uses: aquasecurity/trivy-action@master
             with:
-              image-ref: 'rinkukunwarrao/Project-frontend:latest'
+              image-ref: 'rinkukunwarrao/project_frontend:latest'
             #  exit-code: '1'
               vuln-type: 'os,library'
               severity: 'CRITICAL,HIGH'
@@ -45,7 +45,7 @@ jobs:
           - name: Run Trivy vulnerability scanner
             uses: aquasecurity/trivy-action@master
             with:
-              image-ref: 'rinkukunwarrao/Project-backend:latest'
+              image-ref: 'rinkukunwarrao/project_backend:latest'
             #  exit-code: '1'
               vuln-type: 'os,library'
               severity: 'CRITICAL,HIGH'
@@ -66,10 +66,10 @@ jobs:
         
           - name: push the docker image
             id: push-docker-image-frontend
-            run: docker push rinkukunwarrao/Project-frontend:latest
+            run: docker push rinkukunwarrao/project_frontend:latest
 
           - name: push the docker image
             id: push-docker-image-backend
-            run: docker push rinkukunwarrao/Project-backend:latest
+            run: docker push rinkukunwarrao/project_backend:latest
     
  
