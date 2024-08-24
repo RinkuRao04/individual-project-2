@@ -1,0 +1,33 @@
+name: Trigger Local Docker Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  trigger-local-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Trigger Local Docker Build
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+           sudo apt-get update
+           sudo apt-get install -y docker.io
+
+           # Start Docker service
+           sudo systemctl start docker
+           sudo systemctl enable docker
+
+           # Pull the Docker image from Docker Hub
+           docker pull rinkukunwarrao/demo-image-test:latest
+
+           # List Docker images to verify
+           docker images
