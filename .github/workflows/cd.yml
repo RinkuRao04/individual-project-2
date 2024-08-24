@@ -50,10 +50,10 @@ jobs:
                 # sudo systemctl enable docker
     
                 # Pull Docker image from Docker Hub
-                sudo docker pull rinkukunwarrao/demo-image-test:latest
+                # sudo docker pull rinkukunwarrao/demo-image-test:latest
     
                 # List Docker images to verify
-                sudo docker images
+                # sudo docker images
 
         - name: Docker compose up
           uses: appleboy/ssh-action@v0.1.7
@@ -62,6 +62,8 @@ jobs:
               username: ${{ secrets.STAGING_SSH_USER }}
               key: ${{ secrets.STAGING_SSH_KEY }}
               script: |
-                cd comp 
-                sudo docker compose up
-          
+                cd /home/ubuntu/comp
+                sudo docker-compose down  # Ensure no old containers are running
+                sudo docker-compose pull  # Pull the latest images
+                sudo docker-compose up -d  # Start containers in detached mode
+              
