@@ -62,6 +62,6 @@ jobs:
               username: ${{ secrets.STAGING_SSH_USER }}
               key: ${{ secrets.STAGING_SSH_KEY }}
               script: |
-                cd /home/ubuntu/comp 
+                cd comp 
                 sudo docker compose up
           
