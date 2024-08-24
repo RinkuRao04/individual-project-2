@@ -1,58 +1,75 @@
-# name: Build Docker Image
-# on:
-#   push:
-#     branches:
-#         - master
-#       # - Test
-# jobs:
-#   # test:
-#   #   ...
-#   build:
-#         name: push docker image to docker hub
-#         runs-on: ubuntu-latest
-#         steps:
-#           - uses: actions/checkout@v3
-#           - name: login to docker hub
-#             id: docker-hub
-#             env:
-#               username: ${{secrets.DOCKERHUB_USERNAME}}
-#               password: ${{secrets.DOCKERHUB_PASSWORD}}
+name: Build Docker Image
+on:
+  push:
+    branches:
+        - master
+     
+jobs:
+ 
+  build:
+        name: push docker image to docker hub
+        runs-on: ubuntu-latest
+        steps:
+          - uses: actions/checkout@v3
+          - name: login to docker hub
+            id: docker-hub
+            env:
+              username: ${{secrets.DOCKERHUB_USERNAME}}
+              password: ${{secrets.DOCKERHUB_PASSWORD}}
               
               
-#             run: |
-#               docker login -u $username -p $password
+            run: |
+              docker login -u $username -p $password
   
      
-#           - name: build the docker image
-#             id: build-docker-image
-#             run: |
-#               ls -la 
-#               docker build . -t rinkukunwarrao/demo-image-test:latest
+          - name: build the docker image
+            id: build-docker-image-frontend
+            run: |
+              cd frontend
+              docker build . -t rinkukunwarrao/Project-frontend:latest
               
-#           - name: Run Trivy vulnerability scanner
-#             uses: aquasecurity/trivy-action@master
-#             with:
-#               image-ref: 'rinkukunwarrao/demo-image-test:latest'
-#             #  exit-code: '1'
-#               vuln-type: 'os,library'
-#               severity: 'CRITICAL,HIGH'
+          - name: build the docker image
+            id: build-docker-image-backend
+            run: |
+              cd backend
+              docker build . -t rinkukunwarrao/Project-backend:latest
+              
+          - name: Run Trivy vulnerability scanner
+            uses: aquasecurity/trivy-action@master
+            with:
+              image-ref: 'rinkukunwarrao/Project-frontend:latest'
+            #  exit-code: '1'
+              vuln-type: 'os,library'
+              severity: 'CRITICAL,HIGH'
+
+          - name: Run Trivy vulnerability scanner
+            uses: aquasecurity/trivy-action@master
+            with:
+              image-ref: 'rinkukunwarrao/Project-backend:latest'
+            #  exit-code: '1'
+              vuln-type: 'os,library'
+              severity: 'CRITICAL,HIGH'
       
               
       
-#           - name: Slack Notification
-#             if: failure()
-#             uses: rtCamp/action-slack-notify@v2
-#             env: 
-#               SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
-#               SLACK_CHANNEL: '#testing'
-#               SLACK_COLOR: '#3339ff'
-#               SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
+          - name: Slack Notification
+            if: failure()
+            uses: rtCamp/action-slack-notify@v2
+            env: 
+              SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+              SLACK_CHANNEL: '#testing'
+              SLACK_COLOR: '#3339ff'
+              SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
         
      
   
         
-#           - name: push the docker image
-#             id: push-docker-image
-#             run: docker push rinkukunwarrao/demo-image-test:latest
+          - name: push the docker image
+            id: push-docker-image-frontend
+            run: docker push rinkukunwarrao/Project-frontend:latest
+
+          - name: push the docker image
+            id: push-docker-image-backend
+            run: docker push rinkukunwarrao/Project-backend:latest
     
  
