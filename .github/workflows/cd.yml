@@ -50,7 +50,7 @@ jobs:
                 # sudo systemctl enable docker
     
                 # Pull Docker image from Docker Hub
-                sudo docker pull your-dockerhub-username/your-image:latest
+                sudo docker pull rinkukunwarrao/demo-image-test:latest
     
                 # List Docker images to verify
                 sudo docker images
