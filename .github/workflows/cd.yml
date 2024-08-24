@@ -1,70 +1,63 @@
 name: CD Pipeline
+
 on:
-    push:
-        branches:
-            - 'master'
-
-
+  push:
+    branches:
+      - master
 
 jobs:
-
-# test:
-
-# ...
-
-    deploy:
-        name: "Deploy to staging"
-        runs-on: ubuntu-latest
-        
-        steps:
-        - name: Configure SSH
-          run: |
-            mkdir -p ~/.ssh/
-            echo "$SSH_KEY" > ~/.ssh/staging.key
-            chmod 600 ~/.ssh/staging.key
-            cat >>~/.ssh/config <<END
-            Host staging
+  deploy:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$SSH_KEY" > ~/.ssh/staging.key
+          chmod 600 ~/.ssh/staging.key
+          cat >>~/.ssh/config <<END
+          Host staging
             HostName $SSH_HOST
             User $SSH_USER
             IdentityFile ~/.ssh/staging.key
             StrictHostKeyChecking no
-            END
-          env:
-              SSH_USER: ${{ secrets.STAGING_SSH_USER }}
-              SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
-              SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+          END
+        env:
+          SSH_USER: ${{ secrets.STAGING_SSH_USER }}
+          SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
-        - name: SSH to AWS and Pull Docker Image
-          uses: appleboy/ssh-action@v0.1.7
-          with:
-              host: ${{ secrets.STAGING_SSH_HOST }}
-              username: ${{ secrets.STAGING_SSH_USER }}
-              key: ${{ secrets.STAGING_SSH_KEY }}
-              script: |
-                # Ensure Docker is installed
-                # sudo apt-get update
-                # sudo apt-get install -y docker.io
+      - name: SSH to AWS and Pull Docker Images
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            # Ensure Docker is installed (if needed)
+            # sudo apt-get update
+            # sudo apt-get install -y docker.io
     
-                # # Start Docker service
-                # sudo systemctl start docker
-                # sudo systemctl enable docker
+            # Start Docker service (if needed)
+            # sudo systemctl start docker
+            # sudo systemctl enable docker
     
-                # Pull Docker image from Docker Hub
-                 sudo docker pull rinkukunwarrao/project_frontend:latest
-                 sudo docker pull rinkukunwarrao/project_backend:latest
+            # Pull Docker images from Docker Hub
+            sudo docker pull rinkukunwarrao/project_frontend:latest
+            sudo docker pull rinkukunwarrao/project_backend:latest
     
-                # List Docker images to verify
-                # sudo docker images
+            # List Docker images to verify
+            sudo docker images
 
-        - name: Docker compose up
-          uses: appleboy/ssh-action@v0.1.7
-          with:
-              host: ${{ secrets.STAGING_SSH_HOST }}
-              username: ${{ secrets.STAGING_SSH_USER }}
-              key: ${{ secrets.STAGING_SSH_KEY }}
-              script: |
-                cd /home/ubuntu/comp
-                sudo docker compose down  # Ensure no old containers are running
-                sudo docker compose pull  # Pull the latest images
-                sudo docker compose up  d  # Start containers in detached mode
-              
+      - name: Docker Compose Up
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            cd /home/ubuntu/comp
+            sudo docker compose down  # Ensure no old containers are running
+            sudo docker compose pull  # Pull the latest images
+            sudo docker compose up -d  # Start containers in detached mode
