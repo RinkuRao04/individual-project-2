@@ -1,104 +1,58 @@
-name: Build Docker Image
-on:
-  push:
-    branches:
-        - master
-      # - Test
-jobs:
-  # test:
-  #   ...
-  build:
-        name: push docker image to docker hub
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: login to docker hub
-            id: docker-hub
-            env:
-              username: ${{secrets.DOCKERHUB_USERNAME}}
-              password: ${{secrets.DOCKERHUB_PASSWORD}}
+# name: Build Docker Image
+# on:
+#   push:
+#     branches:
+#         - master
+#       # - Test
+# jobs:
+#   # test:
+#   #   ...
+#   build:
+#         name: push docker image to docker hub
+#         runs-on: ubuntu-latest
+#         steps:
+#           - uses: actions/checkout@v3
+#           - name: login to docker hub
+#             id: docker-hub
+#             env:
+#               username: ${{secrets.DOCKERHUB_USERNAME}}
+#               password: ${{secrets.DOCKERHUB_PASSWORD}}
               
               
-            run: |
-              docker login -u $username -p $password
+#             run: |
+#               docker login -u $username -p $password
   
      
-          - name: build the docker image
-            id: build-docker-image
-            run: |
-              ls -la 
-              docker build . -t rinkukunwarrao/demo-image-test:latest
+#           - name: build the docker image
+#             id: build-docker-image
+#             run: |
+#               ls -la 
+#               docker build . -t rinkukunwarrao/demo-image-test:latest
               
-          - name: Run Trivy vulnerability scanner
-            uses: aquasecurity/trivy-action@master
-            with:
-              image-ref: 'rinkukunwarrao/demo-image-test:latest'
-            #  exit-code: '1'
-              vuln-type: 'os,library'
-              severity: 'CRITICAL,HIGH'
+#           - name: Run Trivy vulnerability scanner
+#             uses: aquasecurity/trivy-action@master
+#             with:
+#               image-ref: 'rinkukunwarrao/demo-image-test:latest'
+#             #  exit-code: '1'
+#               vuln-type: 'os,library'
+#               severity: 'CRITICAL,HIGH'
       
               
       
-          - name: Slack Notification
-            if: failure()
-            uses: rtCamp/action-slack-notify@v2
-            env: 
-              SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
-              SLACK_CHANNEL: '#testing'
-              SLACK_COLOR: '#3339ff'
-              SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
+#           - name: Slack Notification
+#             if: failure()
+#             uses: rtCamp/action-slack-notify@v2
+#             env: 
+#               SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+#               SLACK_CHANNEL: '#testing'
+#               SLACK_COLOR: '#3339ff'
+#               SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
         
      
   
         
-          - name: push the docker image
-            id: push-docker-image
-            run: docker push rinkukunwarrao/demo-image-test:latest
+#           - name: push the docker image
+#             id: push-docker-image
+#             run: docker push rinkukunwarrao/demo-image-test:latest
     
-  deploy:
-        name: "Deploy to staging"
-        runs-on: ubuntu-latest
-        #if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        # needs: test
-        steps:
-          - name: Configure SSH
-            run: |
-              mkdir -p ~/.ssh/
-              echo "$SSH_KEY" > ~/.ssh/staging.key
-              chmod 600 ~/.ssh/staging.key
-              cat >>~/.ssh/config <<END
-              Host staging
-                HostName $SSH_HOST
-                User $SSH_USER
-                IdentityFile ~/.ssh/staging.key
-                StrictHostKeyChecking no
-              END
-            env:
-              SSH_USER: ${{ secrets.STAGING_SSH_USER }}
-              SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
-              SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
-
-          - name: Pull and Run Image
-            uses: addnab/docker-run-action@v3
-            with:
-              username: ${{ secrets.DOCKERHUB_USERNAME }}
-              password: ${{ secrets.DOCKERHUB_PASSWORD }}
-              registry: docker.io
-              image: rinkukunwarrao/demo-image-test:latest
-              # run: echo "hello world"
-          
-          # - name: "PULL image" 
-          #   uses: addnab/docker-run-action@v3
-          #   with:
-          #       username: ${{ secrets.DOCKERHUB_USERNAME }}
-          #       password: ${{ secrets.DOCKERHUB_PASSWORD }}
-          #       registry: indi-proj
-          #       image: rinkukunwarrao/demo-image-test:latest
-          #       run: echo "hello world"
-         
-      # - name: Run the docker image
-      # - uses: addnab/docker-run-action@v3
-      #   with:
-      #     image: demo-image-test:latest
-      #     run: echo "hello world"
-       
+ 
