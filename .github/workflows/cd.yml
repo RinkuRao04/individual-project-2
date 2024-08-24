@@ -50,7 +50,8 @@ jobs:
                 # sudo systemctl enable docker
     
                 # Pull Docker image from Docker Hub
-                # sudo docker pull rinkukunwarrao/demo-image-test:latest
+                 sudo docker pull rinkukunwarrao/project_frontend:latest
+                 sudo docker pull rinkukunwarrao/project_backend:latest
     
                 # List Docker images to verify
                 # sudo docker images
