@@ -15,9 +15,9 @@ jobs:
       - name: Trigger Local Docker Build
         uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.STAGING_SSH_HOST }}
-          username: ${{ secrets.STAGING_SSH_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
+          host: ${{ secrets.STAGING_SSH_HOST_NEW }}
+          username: ${{ secrets.STAGING_SSH_USER_NEW }}
+          key: ${{ secrets.STAGING_SSH_KEY_NEW }}
           script: |
            sudo apt-get update
            sudo apt-get install -y docker.io
@@ -27,7 +27,7 @@ jobs:
            sudo systemctl enable docker
 
            # Pull the Docker image from Docker Hub
-           docker pull rinkukunwarrao/demo-image-test:latest
+           sudo docker pull rinkukunwarrao/demo-image-test:latest
 
            # List Docker images to verify
-           docker images
+           sudo docker images
