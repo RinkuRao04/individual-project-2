@@ -33,3 +33,24 @@ jobs:
               SSH_USER: ${{ secrets.STAGING_SSH_USER }}
               SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
               SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
+
+        - name: SSH to AWS and Pull Docker Image
+          uses: appleboy/ssh-action@v0.1.7
+          with:
+              host: ${{ secrets.STAGING_SSH_HOST }}
+              username: ${{ secrets.STAGING_SSH_USER }}
+              key: ${{ secrets.STAGING_SSH_KEY }}
+              script: |
+                # Ensure Docker is installed
+                sudo apt-get update
+                sudo apt-get install -y docker.io
+    
+                # Start Docker service
+                sudo systemctl start docker
+                sudo systemctl enable docker
+    
+                # Pull Docker image from Docker Hub
+                docker pull your-dockerhub-username/your-image:latest
+    
+                # List Docker images to verify
+                docker images
