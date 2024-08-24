@@ -77,15 +77,24 @@ jobs:
               SSH_USER: ${{ secrets.STAGING_SSH_USER }}
               SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
               SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
-          
-          - name: "PULL image" 
+
+          - name: Pull and Run Image
             uses: addnab/docker-run-action@v3
             with:
-                username: ${{ secrets.DOCKERHUB_USERNAME }}
-                password: ${{ secrets.DOCKERHUB_PASSWORD }}
-                registry: indi-proj
-                image: rinkukunwarrao/demo-image-test:latest
-                run: echo "hello world"
+              username: ${{ secrets.DOCKERHUB_USERNAME }}
+              password: ${{ secrets.DOCKERHUB_PASSWORD }}
+              registry: docker.io
+              image: rinkukunwarrao/demo-image-test:latest
+              # run: echo "hello world"
+          
+          # - name: "PULL image" 
+          #   uses: addnab/docker-run-action@v3
+          #   with:
+          #       username: ${{ secrets.DOCKERHUB_USERNAME }}
+          #       password: ${{ secrets.DOCKERHUB_PASSWORD }}
+          #       registry: indi-proj
+          #       image: rinkukunwarrao/demo-image-test:latest
+          #       run: echo "hello world"
          
       # - name: Run the docker image
       # - uses: addnab/docker-run-action@v3
