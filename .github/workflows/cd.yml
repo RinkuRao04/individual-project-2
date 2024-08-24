@@ -54,3 +54,14 @@ jobs:
     
                 # List Docker images to verify
                 sudo docker images
+
+        - name: Docker compose up
+          uses: appleboy/ssh-action@v0.1.7
+          with:
+              host: ${{ secrets.STAGING_SSH_HOST }}
+              username: ${{ secrets.STAGING_SSH_USER }}
+              key: ${{ secrets.STAGING_SSH_KEY }}
+              script: |
+                cd /home/ubuntu/comp 
+                sudo docker compose up
+          
