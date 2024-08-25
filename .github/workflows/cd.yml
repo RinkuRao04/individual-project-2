@@ -50,16 +50,12 @@ jobs:
             sudo docker images
 
       - name: Docker Compose Up
-        uses: appleboy/ssh-action@v0.1.7
         with:
-          host: ${{ secrets.STAGING_SSH_HOST }}
-          username: ${{ secrets.STAGING_SSH_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          script: |
-            cd /home/ubuntu/comp
-            sudo docker compose down  # Ensure no old containers are running
-            sudo docker compose pull  # Pull the latest images
-            sudo docker compose up -d  # Start containers in detached mode
+         
+          script: | 
+            sudo docker compose -f docker-compose.yml down   # Ensure no old containers are running
+            sudo docker compose -f docker-compose.yml pull  # Pull the latest images
+            sudo docker compose  -f docker-compose.yml up -d  # Start containers in detached mode
 
       - name: Slack Notification
         if: success()
