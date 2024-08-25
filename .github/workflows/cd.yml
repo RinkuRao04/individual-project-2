@@ -50,6 +50,7 @@ jobs:
             sudo docker images
 
       - name: Docker Compose Up
+        uses: hoverkraft-tech/compose-action@v0.0.0
         with:
          
           script: | 
