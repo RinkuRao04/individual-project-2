@@ -1,0 +1,115 @@
+
+name: CD Pipeline
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Configure SSH for Bastion Host
+        run: |
+          mkdir -p ~/.ssh/
+          echo "$BASTION_SSH_KEY" > ~/.ssh/bastion.key
+          chmod 600 ~/.ssh/bastion.key
+          echo "$PRIVATE_SSH_KEY" > ~/.ssh/private.key
+          chmod 600 ~/.ssh/private.key
+          cat >>~/.ssh/config <<END
+          Host bastion
+            HostName $BASTION_HOST
+            User $BASTION_USER
+            IdentityFile ~/.ssh/bastion.key
+            StrictHostKeyChecking no
+
+          Host private
+            HostName $PRIVATE_HOST
+            User $PRIVATE_USER
+            IdentityFile ~/.ssh/private.key
+            ProxyJump bastion
+            StrictHostKeyChecking no
+          END
+        env:
+          BASTION_USER: ${{ secrets.BASTION_SSH_USER }}
+          BASTION_HOST: ${{ secrets.BASTION_SSH_HOST }}
+          BASTION_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+          PRIVATE_USER: ${{ secrets.PRIVATE_SSH_USER }}
+          PRIVATE_HOST: ${{ secrets.PRIVATE_SSH_HOST }}
+          PRIVATE_SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
+
+      - name: Upload Docker Compose File and Pull Docker Images
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: private
+          username: ${{ secrets.PRIVATE_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+            # Ensure Docker and Docker Compose are installed
+            sudo apt-get update
+            sudo apt-get install -y docker.io docker-compose
+
+            # Ensure Docker service is running
+            sudo systemctl start docker
+            sudo systemctl enable docker
+
+            # Create or update Docker Compose file
+            cat > docker-compose.yml <<EOF
+            version: "3.7"
+
+            services:
+              api:
+                image: rinkukunwarrao/project_backend:latest
+                environment:
+                  - CONNECTION_STRING=postgres://demo_user:demo_user@db/demo_db
+                depends_on:
+                  - db
+                networks:
+                  - network-backend
+                  - network-frontend
+            
+              webapp:
+                image: rinkukunwarrao/project_frontend:latest
+                environment:
+                  - API_URL=http://api:3001/data
+                depends_on:
+                  - api
+                ports:
+                  - "3000:3000"
+                networks:
+                  - network-frontend
+            
+              db:
+                image: postgres:11.2-alpine
+                environment:
+                  POSTGRES_USER: demo_user
+                  POSTGRES_PASSWORD: demo_user
+                  POSTGRES_DB: demo_db
+                volumes:
+                  - ./init_sql_scripts/:/docker-entrypoint-initdb.d
+                networks:
+                  - network-backend
+            
+            networks:
+              network-backend:
+              network-frontend:
+            EOF
+
+            # Pull Docker images and manage containers
+            sudo docker compose down   # Stop and remove old containers
+            sudo docker compose pull  # Pull the latest images
+            sudo docker compose up -d # Start containers in detached mode
+
+      - name: Slack Notification
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env: 
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+          SLACK_CHANNEL: '#testing'
+          SLACK_COLOR: '#3339ff'
+          SLACK_MESSAGE: 'The build and deployment process has been completed.'
