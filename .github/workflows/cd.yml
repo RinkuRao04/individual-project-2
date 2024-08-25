@@ -12,7 +12,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-       
 
       - name: Configure SSH
         run: |
@@ -30,20 +29,6 @@ jobs:
           SSH_USER: ${{ secrets.STAGING_SSH_USER }}
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
-
-      - name: SSH to AWS and Pull Docker Images
-        uses: appleboy/ssh-action@v0.1.7
-        with:
-          host: ${{ secrets.STAGING_SSH_HOST }}
-          username: ${{ secrets.STAGING_SSH_USER }}
-          key: ${{ secrets.STAGING_SSH_KEY }}
-          script: |
-           
-            sudo docker pull rinkukunwarrao/project_frontend:latest
-            sudo docker pull rinkukunwarrao/project_backend:latest
-    
-            
-            sudo docker images
 
       - name: Upload Docker Compose File and Pull Docker Images
         uses: appleboy/ssh-action@v0.1.7
@@ -76,7 +61,7 @@ jobs:
                   - network-frontend
             
               webapp:
-                build: rinkukunwarrao/project_frontend:latest
+                image: rinkukunwarrao/project_frontend:latest
                 environment:
                   - API_URL=http://api:3001/data
                 depends_on:
@@ -103,9 +88,9 @@ jobs:
             EOF
 
             # Pull Docker images and manage containers
-            sudo docker compose down   # Stop and remove old containers
-            sudo docker compose pull  # Pull the latest images
-            sudo docker compose up -d # Start containers in detached mode
+            sudo docker-compose down   # Stop and remove old containers
+            sudo docker-compose pull  # Pull the latest images
+            sudo docker-compose up -d # Start containers in detached mode
 
       - name: Slack Notification
         if: success()
@@ -115,4 +100,3 @@ jobs:
           SLACK_CHANNEL: '#testing'
           SLACK_COLOR: '#3339ff'
           SLACK_MESSAGE: 'The build and deployment process has been completed.'
-
