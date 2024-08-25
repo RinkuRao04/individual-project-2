@@ -50,8 +50,9 @@ jobs:
             sudo docker images
 
       - name: Docker Compose Up
-        uses: hoverkraft-tech/compose-action@v0.0.0
+        uses: hoverkraft-tech/compose-action@v2.0.1
         with:
+          compose-file: "./docker/docker-compose.yml"
          
           script: | 
             sudo docker compose -f docker-compose.yml down   # Ensure no old containers are running
