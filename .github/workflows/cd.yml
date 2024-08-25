@@ -31,6 +31,9 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
+          
+     
+
       - name: Upload Docker Compose File and Pull Docker Images
         uses: appleboy/ssh-action@v0.1.7
         with:
@@ -52,7 +55,7 @@ jobs:
 
             services:
               api:
-                image: rinkukunwarrao/project_backend
+                image: rinkukunwarrao/project_backend:latest
                 environment:
                   - CONNECTION_STRING=postgres://demo_user:demo_user@db/demo_db
                 depends_on:
@@ -62,7 +65,7 @@ jobs:
                   - network-frontend
             
               webapp:
-                build: rinkukunwarrao/project_frontend
+                build: rinkukunwarrao/project_frontend:latest
                 environment:
                   - API_URL=http://api:3001/data
                 depends_on:
