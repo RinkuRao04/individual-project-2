@@ -58,7 +58,7 @@ jobs:
             env: 
               SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
               SLACK_CHANNEL: '#testing'
-              SLACK_COLOR: '#3339ff'
+              SLACK_COLOR: '#FF0000'
               SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
         
      
