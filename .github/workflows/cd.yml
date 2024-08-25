@@ -40,7 +40,8 @@ jobs:
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |
             # Ensure Docker and Docker Compose are installed
-         
+            if ! command -v docker &> /dev/null; then
+              echo "Docker not found. Installing Docker..."
               sudo apt-get update
               sudo apt-get install ca-certificates curl
               sudo install -m 0755 -d /etc/apt/keyrings
@@ -61,10 +62,22 @@ jobs:
             ./docker-ce-cli_<version>_<arch>.deb \
             ./docker-buildx-plugin_<version>_<arch>.deb \
             ./docker-compose-plugin_<version>_<arch>.deb
+            else
+              echo "Docker is already installed."
+            fi
 
 
+            # Check if Docker Compose is installed
+            if ! command -v docker-compose &> /dev/null; then
+              echo "Docker Compose not found. Installing Docker Compose....
+              
             sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
             sudo chmod +x /usr/local/bin/docker-compose
+            else
+              echo "Docker is already installed."
+            fi
+
+            
             # Create or update Docker Compose file
             cat > docker-compose.yml <<EOF
             version: "3.7"
