@@ -2,14 +2,18 @@ name: CD Pipeline
 on:
   push:
     branches:
-       - master
-       
+      - master
+
 jobs:
   deploy:
     name: Deploy to staging
     runs-on: ubuntu-latest
-    
+
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+       
+
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh/
@@ -27,37 +31,67 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
-      - name: SSH to AWS and Pull Docker Images
+      - name: Upload Docker Compose File and Pull Docker Images
         uses: appleboy/ssh-action@v0.1.7
         with:
           host: ${{ secrets.STAGING_SSH_HOST }}
           username: ${{ secrets.STAGING_SSH_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |
-            # Ensure Docker is installed (if needed)
-            # sudo apt-get update
-            # sudo apt-get install -y docker.io
-    
-            # Start Docker service (if needed)
-            # sudo systemctl start docker
-            # sudo systemctl enable docker
-    
-            # Pull Docker images from Docker Hub
-            sudo docker pull rinkukunwarrao/project_frontend:latest
-            sudo docker pull rinkukunwarrao/project_backend:latest
-    
-            # List Docker images to verify
-            sudo docker images
+            # Ensure Docker and Docker Compose are installed
+            sudo apt-get update
+            sudo apt-get install -y docker.io docker-compose
 
-      - name: Docker Compose Up
-        uses: hoverkraft-tech/compose-action@v2.0.1
-        with:
-          compose-file: "docker-compose.yml"
-         
-          script: | 
-            sudo docker compose -f docker-compose.yml down   # Ensure no old containers are running
-            sudo docker compose -f docker-compose.yml pull  # Pull the latest images
-            sudo docker compose  -f docker-compose.yml up -d  # Start containers in detached mode
+            # Ensure Docker service is running
+            sudo systemctl start docker
+            sudo systemctl enable docker
+
+            # Create or update Docker Compose file
+            cat > docker-compose.yml <<EOF
+            version: "3.7"
+
+            services:
+              api:
+                build: ./backend
+                environment:
+                  - CONNECTION_STRING=postgres://demo_user:demo_user@db/demo_db
+                depends_on:
+                  - db
+                networks:
+                  - network-backend
+                  - network-frontend
+            
+              webapp:
+                build: ./frontend
+                environment:
+                  - API_URL=http://api:3001/data
+                depends_on:
+                  - api
+                ports:
+                  - "3000:3000"
+                networks:
+                  - network-frontend
+            
+              db:
+                image: postgres:11.2-alpine
+                environment:
+                  POSTGRES_USER: demo_user
+                  POSTGRES_PASSWORD: demo_user
+                  POSTGRES_DB: demo_db
+                volumes:
+                  - ./init_sql_scripts/:/docker-entrypoint-initdb.d
+                networks:
+                  - network-backend
+            
+            networks:
+              network-backend:
+              network-frontend:
+            EOF
+
+            # Pull Docker images and manage containers
+            sudo docker compose down   # Stop and remove old containers
+            sudo docker compose pull  # Pull the latest images
+            sudo docker compose up -d # Start containers in detached mode
 
       - name: Slack Notification
         if: success()
@@ -66,5 +100,5 @@ jobs:
           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
           SLACK_CHANNEL: '#testing'
           SLACK_COLOR: '#3339ff'
-          SLACK_MESSAGE: ' The build and deployment process has been completed .'
-             
+          SLACK_MESSAGE: 'The build and deployment process has been completed.'
+
