@@ -52,7 +52,7 @@ jobs:
       - name: Docker Compose Up
         uses: hoverkraft-tech/compose-action@v2.0.1
         with:
-          compose-file: "/home/runner/work/individual-project-2/individual-project-2"
+          compose-file: "docker-compose.yml"
          
           script: | 
             sudo docker compose -f docker-compose.yml down   # Ensure no old containers are running
