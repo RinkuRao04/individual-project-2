@@ -60,3 +60,12 @@ jobs:
             sudo docker compose down  # Ensure no old containers are running
             sudo docker compose pull  # Pull the latest images
             sudo docker compose up -d  # Start containers in detached mode
+
+      - name: Slack Notification
+        uses: rtCamp/action-slack-notify@v2
+        env: 
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+          SLACK_CHANNEL: '#testing'
+          SLACK_COLOR: '#3339ff'
+          SLACK_MESSAGE: ' The build and deployment process has been completed .'
+             
