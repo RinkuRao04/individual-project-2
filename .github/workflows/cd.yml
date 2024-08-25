@@ -31,8 +31,19 @@ jobs:
           SSH_KEY: ${{ secrets.STAGING_SSH_KEY }}
           SSH_HOST: ${{ secrets.STAGING_SSH_HOST }}
 
-          
-     
+      - name: SSH to AWS and Pull Docker Images
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |
+           
+            sudo docker pull rinkukunwarrao/project_frontend:latest
+            sudo docker pull rinkukunwarrao/project_backend:latest
+    
+            
+            sudo docker images
 
       - name: Upload Docker Compose File and Pull Docker Images
         uses: appleboy/ssh-action@v0.1.7
