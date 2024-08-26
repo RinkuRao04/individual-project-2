@@ -56,13 +56,13 @@ jobs:
       
           - name: Count vulnerabilities frontend
             run: |
-              total_vulnerabilities-frontend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-frontend.json)
-              echo "Total vulnerabilities Frontend: $total_vulnerabilities-frontend"
+              total_vulnerabilities_frontend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-frontend.json)
+              echo "Total vulnerabilities Frontend: $total_vulnerabilities_frontend"
 
           - name: Count vulnerabilities backend
             run: |
-              total_vulnerabilities-backend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-backend.json)
-              echo "Total vulnerabilities backend: $total_vulnerabilities-backend"     
+              total_vulnerabilities_backend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-backend.json)
+              echo "Total vulnerabilities backend: $total_vulnerabilities_backend"     
               
       
           - name: Slack Notification
