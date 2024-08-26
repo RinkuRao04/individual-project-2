@@ -1,88 +1,85 @@
 name: Build Docker Image
+
 on:
   push:
     branches:
-        - master
-     
+      - master
+
 jobs:
- 
   build:
-        name: push docker image to docker hub
-        runs-on: ubuntu-latest
-        steps:
-          - uses: actions/checkout@v3
-          - name: login to docker hub
-            id: docker-hub
-            env:
-              username: ${{secrets.DOCKERHUB_USERNAME}}
-              password: ${{secrets.DOCKERHUB_PASSWORD}}
-              
-              
-            run: |
-              docker login -u $username -p $password
-  
-     
-          - name: build the docker image
-            id: build-docker-image-frontend
-            run: |
-              cd frontend
-              docker build . -t rinkukunwarrao/project_frontend:latest
-              
-          - name: build the docker image
-            id: build-docker-image-backend
-            run: |
-              cd backend
-              docker build . -t rinkukunwarrao/project_backend:latest
-              
-          - name: Run Trivy vulnerability scanner
-            uses: aquasecurity/trivy-action@master
-            with:
-              image-ref: 'rinkukunwarrao/project_frontend:latest'
-            #  exit-code: '1'
-              format: 'json'
-              output: 'trivy-report-frontend.json'
-              vuln-type: 'os,library'
-              severity: 'CRITICAL'
+    name: push docker image to docker hub
+    runs-on: ubuntu-latest
 
-          - name: Run Trivy vulnerability scanner
-            uses: aquasecurity/trivy-action@master
-            with:
-              image-ref: 'rinkukunwarrao/project_backend:latest'
-            #  exit-code: '1'
-              format: 'json' 
-              output: 'trivy-report-backend.json'
-              vuln-type: 'os,library'
-              severity: 'CRITICAL'
-      
-          - name: Count vulnerabilities frontend
-            run: |
-              total_vulnerabilities_frontend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-frontend.json)
-              echo "Total vulnerabilities Frontend: $total_vulnerabilities_frontend"
+    steps:
+      - uses: actions/checkout@v3
 
-          - name: Count vulnerabilities backend
-            run: |
-              total_vulnerabilities_backend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-backend.json)
-              echo "Total vulnerabilities backend: $total_vulnerabilities_backend"     
-              
-      
-          - name: Slack Notification
-            if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
-            uses: rtCamp/action-slack-notify@v2
-            env: 
-              SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
-              SLACK_CHANNEL: '#testing'
-              SLACK_COLOR: '#FF0000'
-              SLACK_MESSAGE: 'Trivy scan failed. The build and deployment process has been halted .'
-        
-     
-  
-        
-          - name: push the docker image
-            id: push-docker-image-frontend
-            run: docker push rinkukunwarrao/project_frontend:latest
+      - name: Login to Docker Hub
+        id: docker-hub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        run: |
+          echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
-          - name: push the docker image
-            id: push-docker-image-backend
-            run: docker push rinkukunwarrao/project_backend:latest
-    
- 
+      - name: Build the Docker image (Frontend)
+        id: build-docker-image-frontend
+        run: |
+          cd frontend
+          docker build . -t rinkukunwarrao/project_frontend:latest
+
+      - name: Build the Docker image (Backend)
+        id: build-docker-image-backend
+        run: |
+          cd backend
+          docker build . -t rinkukunwarrao/project_backend:latest
+
+      - name: Run Trivy vulnerability scanner (Frontend)
+        id: trivy-frontend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'rinkukunwarrao/project_frontend:latest'
+          format: 'json'
+          output: 'trivy-report-frontend.json'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      - name: Run Trivy vulnerability scanner (Backend)
+        id: trivy-backend
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'rinkukunwarrao/project_backend:latest'
+          format: 'json'
+          output: 'trivy-report-backend.json'
+          vuln-type: 'os,library'
+          severity: 'CRITICAL'
+
+      - name: Count vulnerabilities (Frontend)
+        id: count-frontend
+        run: |
+          total_vulnerabilities_frontend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-frontend.json)
+          echo "total_vulnerabilities_frontend=$total_vulnerabilities_frontend" >> $GITHUB_ENV
+          echo "Total vulnerabilities Frontend: $total_vulnerabilities_frontend"
+
+      - name: Count vulnerabilities (Backend)
+        id: count-backend
+        run: |
+          total_vulnerabilities_backend=$(jq '[.Results[].Vulnerabilities[]] | length' trivy-report-backend.json)
+          echo "total_vulnerabilities_backend=$total_vulnerabilities_backend" >> $GITHUB_ENV
+          echo "Total vulnerabilities Backend: $total_vulnerabilities_backend"
+
+      - name: Slack Notification
+        if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
+        uses: rtCamp/action-slack-notify@v2
+        env: 
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+          SLACK_CHANNEL: '#testing'
+          SLACK_COLOR: '#FF0000'
+          SLACK_MESSAGE: 'Trivy scan found vulnerabilities. The build and deployment process has been halted.'
+
+      - name: Push the Docker image (Frontend)
+        id: push-docker-image-frontend
+        run: docker push rinkukunwarrao/project_frontend:latest
+
+      - name: Push the Docker image (Backend)
+        id: push-docker-image-backend
+        run: docker push rinkukunwarrao/project_backend:latest
