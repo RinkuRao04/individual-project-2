@@ -68,14 +68,14 @@ jobs:
           echo "total_vulnerabilities_backend=$total_vulnerabilities_backend" >> $GITHUB_ENV
           echo "Total vulnerabilities Backend: $total_vulnerabilities_backend"
 
-      - name: Slack Notification
-        if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
-        uses: rtCamp/action-slack-notify@v2
-        env: 
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
-          SLACK_CHANNEL: '#testing'
-          SLACK_COLOR: '#FF0000'
-          SLACK_MESSAGE: 'Trivy scan found vulnerabilities. The build and deployment process has been halted.'
+      # - name: Slack Notification
+      #   if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
+      #   uses: rtCamp/action-slack-notify@v2
+      #   env: 
+      #     SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+      #     SLACK_CHANNEL: '#testing'
+      #     SLACK_COLOR: '#FF0000'
+      #     SLACK_MESSAGE: 'Trivy scan found vulnerabilities. The build and deployment process has been halted.'
           
       # - name: halt 
       #   if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
