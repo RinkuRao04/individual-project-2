@@ -91,3 +91,31 @@ jobs:
       - name: Push the Docker image (Backend)
         id: push-docker-image-backend
         run: docker push rinkukunwarrao/project_backend:latest
+
+
+  deploy:
+    name: Deploy to staging
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Upload Docker Compose File and Pull Docker Images
+        uses: appleboy/ssh-action@v0.1.7
+        with:
+          host: ${{ secrets.STAGING_SSH_HOST }}
+          username: ${{ secrets.STAGING_SSH_USER }}
+          key: ${{ secrets.STAGING_SSH_KEY }}
+          script: |  # Pull Docker images and manage containers
+            sudo docker-compose down   # Stop and remove old containers
+            sudo docker-compose pull  # Pull the latest images
+            sudo docker-compose up -d # Start containers in detached mode
+
+      - name: Slack Notification
+        if: success()
+        uses: rtCamp/action-slack-notify@v2
+        env: 
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_T }}
+          SLACK_CHANNEL: '#testing'
+          SLACK_COLOR: '#008000'
+          SLACK_MESSAGE: 'The build and deployment process has been completed.'
+
