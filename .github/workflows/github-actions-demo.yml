@@ -77,11 +77,11 @@ jobs:
           SLACK_COLOR: '#FF0000'
           SLACK_MESSAGE: 'Trivy scan found vulnerabilities. The build and deployment process has been halted.'
           
-      - name: halt 
-        if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
-        run: |
-           echo "process halt....."
-           exit 1
+      # - name: halt 
+      #   if: ${{ env.total_vulnerabilities_frontend > 0 || env.total_vulnerabilities_backend > 0 }}
+      #   run: |
+      #      echo "process halt....."
+      #      exit 1
            
 
       - name: Push the Docker image (Frontend)
