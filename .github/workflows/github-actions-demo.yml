@@ -106,9 +106,9 @@ jobs:
           username: ${{ secrets.STAGING_SSH_USER }}
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |  # Pull Docker images and manage containers
-            sudo docker-compose down   # Stop and remove old containers
-            sudo docker-compose pull  # Pull the latest images
-            sudo docker-compose up -d # Start containers in detached mode
+             docker-compose down   # Stop and remove old containers
+             docker-compose pull  # Pull the latest images
+             docker-compose up -d # Start containers in detached mode
 
       - name: Slack Notification
         if: success()
