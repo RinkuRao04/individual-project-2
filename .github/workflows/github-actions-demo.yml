@@ -107,7 +107,6 @@ jobs:
           key: ${{ secrets.STAGING_SSH_KEY }}
           script: |  # Pull Docker images and manage containers
              docker-compose down   # Stop and remove old containers
-             docker-compose pull  # Pull the latest images
              docker-compose up -d # Start containers in detached mode
 
       - name: Slack Notification
